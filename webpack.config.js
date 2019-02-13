@@ -1,154 +1,62 @@
-import webpack from 'webpack';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-
-const development = {
-  output: {
-    path: require('path').join(__dirname + '/dist'),
-    filename: 'index.js',
-    publicPath: '/'
-  },
-  debug: true,
-  devtool: 'eval',
-  entry: [
-    'eventsource-polyfill',
-    'webpack-hot-middleware/client',
-    './src/index'
-  ],
-  stats: {
-    colors: true,
-    reasons: true
+modules.exports = {
+  //模式:开发模式
+  mode: "development",
+  entry: path.join(__dirname, './src/index'), //入口
+  output: { //出口
+    filename: '[hash].bundle.js',
+    path: path.resolve(__dirname, './dist')
   },
   resolve: {
-    extensions: ['', '.js'],
     alias: {
-      'actions': __dirname + '/src/actions/',
-      'components': __dirname + '/src/components/',
-      'constants': __dirname + '/src/constants/',
-      'pages': __dirname + '/src/pages/',
-      'reducers': __dirname + '/src/reducers/',
-      'styles': __dirname + '/src/styles',
-      'images': __dirname + '/src/public/images',
-      'lib': __dirname + '/src/lib'
+      Components: path.resolve(__dirname, 'src/components/'),
+      Configs: path.resolve(__dirname, 'src/Config/'),
+      extensions: [".ts", ".tsx", ".js"]
     }
   },
-  module: {
-    preLoaders: [{
-      test: /\.js$/,
-      exclude: [/node_module/, 'mock/*'],
-      loader: 'eslint'
-    }],
-    loaders: [{
-      test: /\.js$/,
-      exclude: /node_modules/,
-      loader: 'babel'
-    }, {
-      test: /\.scss/,
-      exclude: [/node_module/],
-      loader: 'style!css?module&localIdentName=[path][name]---[local]---[hash:base64:5]!postcss'
-    }, {
-      test: /\.css/,
-      exclude: [/node_module/],
-      loader: 'style!css'
-    }, {
-      test: /\.(png|jpg|woff|woff2)$/,
-      loader: 'url?limit=8192'
-    }]
+  devtool: 'source-map', //调试工具，不同模式构建速度不同，source-map适合生存环境，开发环境用eval-source-map
+  //npm install --save-dev webpack-dev-server
+  devServer: {
+    //告诉服务器从哪个目录中提供内容。只有在你想要提供静态文件时才需要
+    contentBase: path.resolve(__dirname, "dist"),
+    compress: true, //是否压缩
+    port: 8080, //端口号
+    host: '0.0.0.0', //外部服务器可以访问
+    open: true //是否运行时打开浏览器
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin(),
-    new webpack.DefinePlugin({
-      __DEVELOPMENT__: true
-    }),
+    //该插件将为你生成一个HTML5文件，其中包括使用script标签的body中的所有webpack包
+    //安装npm install --save-dev html-webpack-plugin
     new HtmlWebpackPlugin({
-      template: 'src/index.html.tpl',
-      inject: 'body'
+      title: '标题',//用于生成的HTML文档的标题
+      template: './index.html', //默认index.html位置
     })
   ],
-  postcss() {
-    return [
-      require("postcss-import")({addDependencyTo: webpack}),
-      require("postcss-url")(),
-      require("postcss-cssnext")(),
-      require('precss'),
-      require("postcss-browser-reporter")(),
-      require("postcss-reporter")()
-    ];
-  }
-};
-
-const production = {
-  output: {
-    path: require('path').join(__dirname + '/dist'),
-    filename: 'index-[hash].js',
-    publicPath: '/'
-  },
-  devtool: 'sourcemap',
-  entry: [
-    './src/index'
-  ],
-  stats: {
-    colors: true,
-    reasons: true
-  },
-  resolve: {
-    extensions: ['', '.js'],
-    alias: {
-      'actions': __dirname + '/src/actions/',
-      'components': __dirname + '/src/components/',
-      'constants': __dirname + '/src/constants/',
-      'pages': __dirname + '/src/pages/',
-      'reducers': __dirname + '/src/reducers/',
-      'styles': __dirname + '/src/styles',
-      'images': __dirname + '/src/public/images',
-      'lib': __dirname + '/src/lib'
-    }
-  },
   module: {
-    loaders: [{
-      test: /\.js$/,
-      exclude: /node_modules/,
-      loader: 'babel'
-    }, {
-      test: /\.scss/,
-      exclude: [/node_module/],
-      loader: 'style!css?module&localIdentName=[path][name]---[local]---[hash:base64:5]!postcss'
-    }, {
-      test: /\.css/,
-      exclude: [/node_module/],
-      loader: 'style!css'
-    }, {
-      test: /\.(png|jpg|woff|woff2)$/,
-      loader: 'url?limit=8192'
-    }]
-  },
-  plugins: [
-    new webpack.optimize.DedupePlugin(),
-    new webpack.optimize.OccurenceOrderPlugin(),
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false
-      }
-    }),
-    new webpack.NoErrorsPlugin(),
-    new webpack.DefinePlugin({
-      __DEVELOPMENT__: false
-    }),
-    new HtmlWebpackPlugin({
-      template: 'src/index.html.tpl',
-      inject: 'body'
-    })
-  ],
-  postcss() {
-    return [
-      require("postcss-import")({addDependencyTo: webpack}),
-      require("postcss-url")(),
-      require("postcss-cssnext")(),
-      require('precss'),
-      require("postcss-browser-reporter")(),
-      require("postcss-reporter")()
-    ];
+    rules: [
+      //ts-loader 用来解析ts文件
+      //需要安装以下依赖
+      //npm install ts-loader --save-dev
+      //npm install typescript --save-dev
+      //安装react相关依赖
+      //npm install --save-dev react react-dom @types/react @types/react-dom
+      {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,//不解析node_modules
+        loader: 'ts-loader'
+      },
+      //加载json，png等文件
+      //安装npm install --save-dev file-loader
+      {
+        test: /\.[(png)|(obj)|(json)]$/,
+        loader: "file-loader"
+      },
+      //加载css
+      //安装npm install --save-dev css-loader
+      //npm install style-loader --save-dev
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader']
+      },
+    ]
   }
-};
-
-module.exports = { development, production };
+}
