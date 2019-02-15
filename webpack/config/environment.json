@@ -1,0 +1,12 @@
+{
+  "venus": {
+    "devHost": {
+      "dev": "http://me.ly.com",
+      "prod": "http://me.ly.com"
+    },
+    "devPort": {
+      "dev": 3000,
+      "prod": 3001
+    }
+  }
+}

@@ -1,13 +1,13 @@
 
 const path = require('path');
-
+const APP_PATH = path.resolve(__dirname, '../src');
+const DIST_PATH = path.resolve(__dirname, '../dist');
 module.exports = {
-  context: path.resolve(__dirname, '../'),
   entry: {
-    app: ('./src/index.js')
+    app: path.join(APP_PATH,'index.js')
   },
   output: {
-    path: path.resolve(__dirname, '../dist'),
+    path: DIST_PATH,
     filename: '[name].[hash:8].js',
   },
   resolve: {
