@@ -13,6 +13,6 @@ getPort(DEFAULT_PORT).then((port) => {
   }
   server.use(middlewares)
   server.use(router)
-  server.listen(port, () => { console.log('JSON Server is running'); })
+  server.listen(port, () => { console.log(`JSON Server is running at ${port}`); })
 });
 

@@ -4,12 +4,17 @@ const webpack = require('webpack');
 const getPort = require('get-port');
 const executeNodeScript = require('../utils/executeNodeScript');
 const paths = require('../config/paths');
-const config = require('../webpack.base.conf');
+const config = require('../webpack.dev.conf');
 const processArgs = require('../utils/processArgs');
+const getAvailableEntry = require('../utils/getAvailableEntry');
+
 const DEFAULT_PORT = processArgs.get('alpaca:devPort:dev');
 const ALPACA_MODULES = processArgs.get('AlPACA_MODULES');
 
+const host = process.env.HOST || '0.0.0.0';
+
 // 先启动mock服务,再启动webpack-dev-server服务。
+
 (async () => {
   let nodeServerHasLunched = false;
   if (nodeServerHasLunched) { return; }
@@ -45,16 +50,9 @@ const ALPACA_MODULES = processArgs.get('AlPACA_MODULES');
   })
 
   server.listen(port, host, () => {
+    // clearConsole();
     console.log(`Listening at ${protocol}://${host}:${port}`);
     console.log('start mock server here');
   })
 
 })()
-
-
-
-
-
-
-
-
