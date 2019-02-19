@@ -7,6 +7,7 @@ const paths = require('../config/paths');
 const config = require('../webpack.dev.conf');
 const processArgs = require('../utils/processArgs');
 const getAvailableEntry = require('../utils/getAvailableEntry');
+const path = require('path');
 
 const DEFAULT_PORT = processArgs.get('alpaca:devPort:dev');
 const ALPACA_MODULES = processArgs.get('AlPACA_MODULES');
@@ -41,13 +42,21 @@ const host = process.env.HOST || '0.0.0.0';
 
   const compiler = webpack(config)
 
-  const server = new WebpackDevServer(compiler, {
-    hot: true,
-    noInfo: true,
-    filename: config.output.filename,
-    publicPath: config.output.publicPath,
-    stats: { colors: true },
-  })
+  const server = new WebpackDevServer(compiler,
+    {
+      contentBase: path.join(__dirname, '../'),
+      quiet: true,
+      publicPath: '/dist/',   //publicPath必填 否则就不好使
+      hot: true,
+      compress: true,
+      historyApiFallback: true,
+      setup(app, ctx) {
+        app.use(hotMiddleware)
+        ctx.middleware.waitUntilValid(() => {
+          resolve()
+        })
+      }
+    })
 
   server.listen(port, host, () => {
     // clearConsole();
