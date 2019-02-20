@@ -6,6 +6,6 @@ nconf.argv().env()
   .file({
     file: path.join(__dirname, 'environment.json')
   })
-  .merge({ venus: require(paths.appVenusConfig) });
+  .merge({ alpaca: require(paths.appAlpacaConfig) });
 
 module.exports = nconf;

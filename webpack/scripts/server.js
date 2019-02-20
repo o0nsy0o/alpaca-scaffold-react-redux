@@ -1,67 +1,76 @@
 const WebpackDevServer = require("webpack-dev-server");
 const _ = require('underscore-contrib');
 const webpack = require('webpack');
-const getPort = require('get-port');
+// const paths = require('../config/paths');
+const config = require('../config/webpack.dev.conf');
+
 const executeNodeScript = require('../utils/executeNodeScript');
-const paths = require('../config/paths');
-const config = require('../webpack.dev.conf');
-const processArgs = require('../utils/processArgs');
 const getAvailableEntry = require('../utils/getAvailableEntry');
-const path = require('path');
+const clearConsole = require('../utils/clearConsole');
+const {
+  choosePort, createCompiler,
+  prepareProxy, prepareUrls,
+} = require('../utils/WebpackDevServerUtils');
 
-const DEFAULT_PORT = processArgs.get('alpaca:devPort:dev');
-const ALPACA_MODULES = processArgs.get('AlPACA_MODULES');
+const processArgs = require('../utils/processArgs');
 
-const host = process.env.HOST || '0.0.0.0';
+const isInteractive = process.stdout.isTTY;
 
-// 先启动mock服务,再启动webpack-dev-server服务。
+let nodeServerHasLunched = false;
 
 (async () => {
-  let nodeServerHasLunched = false;
-  if (nodeServerHasLunched) { return; }
-  executeNodeScript('node_modules/.bin/supervisor', '--watch', paths.appServer, 'server/index.js');
+
+  const DEFAULT_PORT = processArgs.get('alpaca:devPort:dev') || 3000;
+
+  const HOST = process.env.HOST || '0.0.0.0';
+
+  const port = await choosePort(HOST, DEFAULT_PORT);
+
+  processArgs.set('alpaca:devPort:dev', port);
+
+  if (nodeServerHasLunched) { return; };
+
+  executeNodeScript(
+    'node_modules/.bin/supervisor',
+    '--watch', 'server/mockData',
+    '--', 'server/index.js',
+    '--ALPACA_WEBPACK_PORT', `${port}`
+  );
+
   nodeServerHasLunched = true;
 
-  const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
-  const port = await getPort(DEFAULT_PORT);
-  config.entry = getAvailableEntry(ALPACA_MODULES);
+  const alpacaModules = processArgs.get('AlPACA_MODULES');
 
-  _.map(config.entry, (value, key) => {
+  config.entry = getAvailableEntry(alpacaModules);
+
+  _.map(config.entry, function (value, key) {
     config.entry[key] = [
-      `webpack-dev-server/client?${protocol}://${host}:${port}/`,
+      `webpack-dev-server/client?http://${HOST}:${port}/`,
       'webpack/hot/dev-server',
       value
     ];
   })
 
-  config.output.publicPath = `${protocol}://${host}:${port}/public/`
+  config.output.publicPath = `http://${HOST}:${port}/static/`;
 
-  config.plugins = (config.plugins || []).concat([
-    new webpack.HotModuleReplacementPlugin(),
-  ])
+  var compiler = webpack(config);
 
-  const compiler = webpack(config)
+  var server = new WebpackDevServer(compiler, {
+    hot: true,
+    noInfo: true,
+    filename: config.output.filename,
+    publicPath: config.output.publicPath,
+    stats: { colors: true },
+  })
 
-  const server = new WebpackDevServer(compiler,
-    {
-      contentBase: path.join(__dirname, '../'),
-      quiet: true,
-      publicPath: '/dist/',   //publicPath必填 否则就不好使
-      hot: true,
-      compress: true,
-      historyApiFallback: true,
-      setup(app, ctx) {
-        app.use(hotMiddleware)
-        ctx.middleware.waitUntilValid(() => {
-          resolve()
-        })
-      }
-    })
+  const portFontServer = await choosePort(HOST, DEFAULT_PORT);
 
-  server.listen(port, host, () => {
-    // clearConsole();
-    console.log(`Listening at ${protocol}://${host}:${port}`);
-    console.log('start mock server here');
+  server.listen(portFontServer, HOST, () => {
+    if (isInteractive) {
+      clearConsole();
+    }
+    console.log(`Listening at https://${HOST}:${portFontServer}`);
+    console.log(process);
   })
 
 })()

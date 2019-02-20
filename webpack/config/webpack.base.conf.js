@@ -3,9 +3,6 @@ const path = require('path');
 const APP_PATH = path.resolve(__dirname, '../src');
 const DIST_PATH = path.resolve(__dirname, '../dist');
 module.exports = {
-  entry: {
-    app: path.join(APP_PATH,'index.js')
-  },
   output: {
     path: DIST_PATH,
     filename: '[name].[hash:8].js',
@@ -16,9 +13,11 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js?$/,
-        use: "babel-loader",
-        include: APP_PATH
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader"
+        }
       }
     ]
   }

@@ -10,5 +10,5 @@ module.exports = {
   appSrc: resolveApp('src'),
   appServer: resolveApp('server'),
   appNodeModules: resolveApp('node_modules'),
-  appVenusConfig: resolveApp('alpaca.config.js'),
+  appAlpacaConfig: resolveApp('alpaca.config.js'),
 };

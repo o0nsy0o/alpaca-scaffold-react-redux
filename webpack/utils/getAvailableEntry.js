@@ -3,19 +3,15 @@ const _ = require('underscore-contrib');
 const path = require('path');
 
 module.exports = (modules) => {
+  const resultEntries = {};
   const entries = processArgs.get('alpaca:webpack:entry') || {};
-  console.log(entries);
-
-  _.forEach(modules, (module) => {
-    let modulePattern = path.join(module.replace(/(\*)+$/ig, ''), '').replace(/^client/, '');
-    console.log(modulePattern);
-    modulePattern = ['./', path.join('client', modulePattern)].join('');
-    _.forEach(entries, (value, key) => {
-      if (value[0].startsWith(modulePattern)) {
-        // allow query parameters
-        // For old android device (4.2+) we need to load the polyfills;
-        newEntries[keepQuery ? key : key.split('?')[0]] = ['polyfills'].concat(value);
+  const Modules = JSON.parse(modules);
+  _.forEach(Modules, (Module) => {
+    _.forEach(Object.keys(entries), (key) => {
+      if (key === Module) {
+        resultEntries[key] = entries[key];
       }
-    });
+    })
   })
+  return resultEntries;
 }

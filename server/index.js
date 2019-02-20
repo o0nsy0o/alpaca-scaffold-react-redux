@@ -1,18 +1,20 @@
-// index.js
 const processArgs = require('../webpack/utils/processArgs');
-const DEFAULT_PORT = processArgs.get(`alpaca:devPort:dev`);
+const DEFAULT_PORT = processArgs.get('ALPACA_WEBPACK_PORT');
 const getPort = require('get-port');
-const jsonServer = require('json-server')
-const server = jsonServer.create()
+const jsonServer = require('json-server');
+const server = jsonServer.create();
 const router = jsonServer.router(require('./mockData/mock.json'));
-const middlewares = jsonServer.defaults()
+const middlewares = jsonServer.defaults();
+const clearConsole = require('../webpack/utils/clearConsole');
 
-getPort(DEFAULT_PORT).then((port) => {
+getPort({ port: DEFAULT_PORT }).then((port) => {
   if (port == null) {
     return console.log('no available port');
   }
   server.use(middlewares)
   server.use(router)
-  server.listen(port, () => { console.log(`JSON Server is running at ${port}`); })
+  server.listen(port, () => {
+    console.log(`JSON Server is running at ${port}`);
+  })
 });
 
