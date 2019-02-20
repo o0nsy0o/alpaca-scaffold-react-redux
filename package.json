@@ -46,7 +46,7 @@
     "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "fs": "0.0.1-security",
     "get-port": "^4.1.0",
-    "html-webpack-plugin": "^2.30.1",
+    "html-webpack-plugin": "^3.2.0",
     "is-root": "^2.0.0",
     "json-server": "^0.14.2",
     "lodash": "^4.17.11",

@@ -22,7 +22,7 @@ let nodeServerHasLunched = false;
 
   const DEFAULT_PORT = processArgs.get('alpaca:devPort:dev') || 3000;
 
-  const HOST = process.env.HOST || '0.0.0.0';
+  const HOST = process.env.HOST || 'localhost';
 
   const port = await choosePort(HOST, DEFAULT_PORT);
 
@@ -43,34 +43,33 @@ let nodeServerHasLunched = false;
 
   config.entry = getAvailableEntry(alpacaModules);
 
+  const port2 = 3001;
+
+  const portFontServer = await choosePort(HOST, DEFAULT_PORT);
+
   _.map(config.entry, function (value, key) {
     config.entry[key] = [
-      `webpack-dev-server/client?http://${HOST}:${port}/`,
+      `webpack-dev-server/client?http://${HOST}:${portFontServer}/`,
       'webpack/hot/dev-server',
       value
     ];
   })
 
-  config.output.publicPath = `http://${HOST}:${port}/static/`;
+  config.output.publicPath = `http://${HOST}:${portFontServer}/static/`;
 
   var compiler = webpack(config);
 
   var server = new WebpackDevServer(compiler, {
     hot: true,
-    noInfo: true,
+    // noInfo: true,
     filename: config.output.filename,
     publicPath: config.output.publicPath,
     stats: { colors: true },
   })
 
-  const portFontServer = await choosePort(HOST, DEFAULT_PORT);
-
   server.listen(portFontServer, HOST, () => {
-    if (isInteractive) {
-      clearConsole();
-    }
+    // if (isInteractive) {clearConsole();}
     console.log(`Listening at https://${HOST}:${portFontServer}`);
-    console.log(process);
   })
 
 })()
