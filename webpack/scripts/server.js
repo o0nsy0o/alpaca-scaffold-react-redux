@@ -3,13 +3,13 @@ const _ = require('underscore-contrib');
 const webpack = require('webpack');
 // const paths = require('../config/paths');
 const config = require('../config/webpack.dev.conf');
+const path = require('path');
 
 const executeNodeScript = require('../utils/executeNodeScript');
 const getAvailableEntry = require('../utils/getAvailableEntry');
 const clearConsole = require('../utils/clearConsole');
 const {
-  choosePort, createCompiler,
-  prepareProxy, prepareUrls,
+  choosePort, createCompiler, prepareProxy, prepareUrls
 } = require('../utils/WebpackDevServerUtils');
 
 const processArgs = require('../utils/processArgs');
@@ -43,9 +43,7 @@ let nodeServerHasLunched = false;
 
   config.entry = getAvailableEntry(alpacaModules);
 
-  const port2 = 3001;
-
-  const portFontServer = await choosePort(HOST, DEFAULT_PORT);
+  const portFontServer = await choosePort(HOST, 3001);
 
   _.map(config.entry, function (value, key) {
     config.entry[key] = [
@@ -55,21 +53,22 @@ let nodeServerHasLunched = false;
     ];
   })
 
-  config.output.publicPath = `http://${HOST}:${portFontServer}/static/`;
+  config.output.publicPath = `http://${HOST}:${portFontServer}/dist/`;
 
   var compiler = webpack(config);
 
   var server = new WebpackDevServer(compiler, {
+    contentBase: path.join(__dirname, "dist"),
     hot: true,
-    // noInfo: true,
+    noInfo: true,
     filename: config.output.filename,
     publicPath: config.output.publicPath,
     stats: { colors: true },
   })
 
   server.listen(portFontServer, HOST, () => {
-    // if (isInteractive) {clearConsole();}
-    console.log(`Listening at https://${HOST}:${portFontServer}`);
+    if (isInteractive) { clearConsole(); }
+    console.log(`Listening at http://${HOST}:${portFontServer}`);
   })
 
 })()

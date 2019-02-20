@@ -11,5 +11,5 @@ module.exports = {
   appServer: resolveApp('server'),
   appNodeModules: resolveApp('node_modules'),
   appAlpacaConfig: resolveApp('alpaca.config.js'),
-  appTemplates: resolveApp('templates')
+  appTemplates: resolveApp('webpack/templates')
 };
