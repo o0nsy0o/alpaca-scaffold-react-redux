@@ -4,13 +4,11 @@ const webpack = require('webpack');
 // const paths = require('../config/paths');
 const config = require('../config/webpack.dev.conf');
 const path = require('path');
+const fp = require('find-free-port');
 
 const executeNodeScript = require('../utils/executeNodeScript');
 const getAvailableEntry = require('../utils/getAvailableEntry');
 const clearConsole = require('../utils/clearConsole');
-const {
-  choosePort, createCompiler, prepareProxy, prepareUrls
-} = require('../utils/WebpackDevServerUtils');
 
 const processArgs = require('../utils/processArgs');
 
@@ -24,9 +22,9 @@ let nodeServerHasLunched = false;
 
   const HOST = process.env.HOST || 'localhost';
 
-  const port = await choosePort(HOST, DEFAULT_PORT);
+  const ports = await fp(DEFAULT_PORT, 3100, '127.0.0.1', 2);
 
-  processArgs.set('alpaca:devPort:dev', port);
+  processArgs.set('alpaca:devPort:dev', ports[0]);
 
   if (nodeServerHasLunched) { return; };
 
@@ -34,26 +32,31 @@ let nodeServerHasLunched = false;
     'node_modules/.bin/supervisor',
     '--watch', 'server/mockData',
     '--', 'server/index.js',
-    '--ALPACA_WEBPACK_PORT', `${port}`
+    '--ALPACA_WEBPACK_PORT', `${ports[0]}`
   );
 
   nodeServerHasLunched = true;
 
-  const alpacaModules = processArgs.get('AlPACA_MODULES');
+  let alpacaModules = processArgs.get('AlPACA_MODULES');
+
+  alpacaModules = JSON.parse(alpacaModules);
+
+  if (!alpacaModules.length) {
+    console.log('you have to assgin the module to start');
+    process.exit(1);
+  }
 
   config.entry = getAvailableEntry(alpacaModules);
 
-  const portFontServer = await choosePort(HOST, 3001);
-
   _.map(config.entry, function (value, key) {
     config.entry[key] = [
-      `webpack-dev-server/client?http://${HOST}:${portFontServer}/`,
+      `webpack-dev-server/client?http://${HOST}:${ports[1]}/`,
       'webpack/hot/dev-server',
       value
     ];
   })
 
-  config.output.publicPath = `http://${HOST}:${portFontServer}/dist/`;
+  config.output.publicPath = `http://${HOST}:${ports[1]}/dist/`;
 
   var compiler = webpack(config);
 
@@ -66,9 +69,9 @@ let nodeServerHasLunched = false;
     stats: { colors: true },
   })
 
-  server.listen(portFontServer, HOST, () => {
+  server.listen(ports[1], HOST, () => {
     if (isInteractive) { clearConsole(); }
-    console.log(`Listening at http://${HOST}:${portFontServer}`);
+    console.log(`Listening at http://${HOST}:${ports[1]}/dist/`);
   })
 
 })()
