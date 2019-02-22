@@ -2,6 +2,8 @@
 const path = require('path');
 const APP_PATH = path.resolve(__dirname, '../src');
 const DIST_PATH = path.resolve(__dirname, '../dist');
+const ProgressBarPlugin = require('progress-bar-webpack-plugin');
+
 module.exports = {
   output: {
     path: DIST_PATH,
