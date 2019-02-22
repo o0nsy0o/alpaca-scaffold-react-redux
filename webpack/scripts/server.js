@@ -1,7 +1,10 @@
+process.on('unhandledRejection', err => {
+  throw err;
+});
+
 const WebpackDevServer = require("webpack-dev-server");
 const _ = require('underscore-contrib');
 const webpack = require('webpack');
-// const paths = require('../config/paths');
 const config = require('../config/webpack.dev.conf');
 const path = require('path');
 const fp = require('find-free-port');

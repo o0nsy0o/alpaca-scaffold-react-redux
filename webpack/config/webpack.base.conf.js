@@ -18,5 +18,11 @@ module.exports = {
         use: { loader: "babel-loader" }
       }
     ]
-  }
+  },
+  plugins: [
+    new ProgressBarPlugin({
+      format: chalk.cyan('build') + ' [:bar] ' + chalk.green.bold(':percent') + ' (:elapsed seconds)',
+      clear: false
+    })
+  ]
 }
