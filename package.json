@@ -3,7 +3,7 @@
   "version": "0.3.0",
   "description": "A react scaffold with redux and its best practice",
   "engines": {
-    "node": ">4.2"
+    "node": ">8.2"
   },
   "scripts": {
     "start": "node scripts/server.js",
@@ -11,8 +11,8 @@
     "asset": "node scripts/asset.js",
     "build": "npm run clean; npm run asset; node scripts/build.js"
   },
-  "author": "lcj <emlcjnil@gmail.com>",
-  "license": "BSD 3-clause",
+  "author": "AndyBug",
+  "license": "ISC",
   "dependencies": {
     "immutable": "^3.7.6",
     "react": "^15.0.0-rc.1",

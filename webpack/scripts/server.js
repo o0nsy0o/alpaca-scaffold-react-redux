@@ -59,7 +59,7 @@ let nodeServerHasLunched = false;
     ];
   })
 
-  config.output.publicPath = `http://${HOST}:${ports[1]}/dist/`;
+  config.output.publicPath = `http://${HOST}:${ports[1]}/public/`;
 
   var compiler = webpack(config);
 
@@ -74,7 +74,7 @@ let nodeServerHasLunched = false;
 
   server.listen(ports[1], HOST, () => {
     if (isInteractive) { clearConsole(); }
-    console.log(`Listening at http://${HOST}:${ports[1]}/dist/`);
+    console.log(`Listening at http://${HOST}:${ports[1]}/public/`);
   })
 
 })()

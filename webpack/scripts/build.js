@@ -13,10 +13,10 @@ const inquirer = require('../utils/inquirer.js');
 const paths = require('../config/paths.js');
 const fileSizeReporter = require('fileSizeReporter');
 
-// const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;
-// const WARN_AFTER_CHUNK_GZIP_SIZE = 1024 * 1024;
-// const measureFileSizesBeforeBuild = fileSizeReporter.measureFileSizesBeforeBuild;
-// const printFileSizesAfterBuild = fileSizeReporter.printFileSizesAfterBuild;
+const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;
+const WARN_AFTER_CHUNK_GZIP_SIZE = 1024 * 1024;
+const measureFileSizesBeforeBuild = fileSizeReporter.measureFileSizesBeforeBuild;
+const printFileSizesAfterBuild = fileSizeReporter.printFileSizesAfterBuild;
 
 // const imageMinifier = require('venus-dev-utils/lib/imageMinifier.js');
 // const formatWebpackMessages = require('venus-dev-utils/lib/formatWebpackMessages');
