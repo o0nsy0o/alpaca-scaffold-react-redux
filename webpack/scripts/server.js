@@ -36,7 +36,10 @@ const { confirmAvailableModules } = require('../utils/confirmAvailableModules');
   executeNodeScript(
     'node_modules/.bin/supervisor',
     '--watch', 'server/mockData',
-    '--', 'server/index.js',
+    '--ignore', 'server/mockData',
+    '-q',
+    '--',
+    'server/index.js',
     '--ALPACA_WEBPACK_PORT', `${serverPort}`
   );
 
@@ -44,7 +47,7 @@ const { confirmAvailableModules } = require('../utils/confirmAvailableModules');
 
   const webpackPort = await choosePort(DEFAULT_PORT, HOST);
 
-  config.entry = answer.confirmAvailableModules
+  config.entry = answer.availableModules
 
   _.map(config.entry, function (value, key) {
     config.entry[key] = [
@@ -61,10 +64,12 @@ const { confirmAvailableModules } = require('../utils/confirmAvailableModules');
   var server = new WebpackDevServer(compiler, {
     contentBase: path.join(__dirname, "dist"),
     hot: true,
+    openPage: '/public/',
     noInfo: true,
+    open: 'Google Chrome',
     filename: config.output.filename,
     publicPath: config.output.publicPath,
-    stats: { colors: true },
+    stats: { colors: true }
   })
 
   server.listen(webpackPort, HOST, () => {

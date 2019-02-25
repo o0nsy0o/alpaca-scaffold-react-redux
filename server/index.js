@@ -6,6 +6,7 @@ const DEFAULT_PORT = processArgs.get('ALPACA_WEBPACK_PORT');
 const server = jsonServer.create();
 const router = jsonServer.router(require('./mockData/mock.json'));
 const middlewares = jsonServer.defaults();
+console.log(DEFAULT_PORT);
 
 (async () => {
   const port = await choosePort(DEFAULT_PORT);
@@ -16,4 +17,4 @@ const middlewares = jsonServer.defaults();
     console.log(`JSON Server is running at ${port}`);
   })
 
-})
+})()
