@@ -2,32 +2,34 @@ process.on('unhandledRejection', err => {
   throw err;
 });
 
-const WebpackDevServer = require("webpack-dev-server");
-const _ = require('underscore-contrib');
-const webpack = require('webpack');
-const config = require('../config/webpack.dev.conf');
 const path = require('path');
-const fp = require('find-free-port');
+const webpack = require('webpack');
+const _ = require('underscore-contrib');
+const config = require('../config/webpack.dev.conf');
+const WebpackDevServer = require("webpack-dev-server");
+const choosePort = require("alpaca-dev-utils/lib/choosePort");
 
-const executeNodeScript = require('../utils/executeNodeScript');
-const getAvailableEntry = require('../utils/getAvailableEntry');
-const clearConsole = require('../utils/clearConsole');
+const clearConsole = require('alpaca-dev-utils/lib/clearConsole');
+const executeNodeScript = require('alpaca-dev-utils/lib/executeNodeScript');
 
-const processArgs = require('../utils/processArgs');
+const processArgs = require('../config/processArgs');
+const DEFAULT_PORT = processArgs.get('alpaca:devPort:dev') || 3000;
 
 const isInteractive = process.stdout.isTTY;
 
 let nodeServerHasLunched = false;
 
+const { confirmAvailableModules } = require('../utils/confirmAvailableModules');
+
 (async () => {
 
-  const DEFAULT_PORT = processArgs.get('alpaca:devPort:dev') || 3000;
+  const answer = await confirmAvailableModules();
+
+  if (!answer.availableModulesOk) { return; }
 
   const HOST = process.env.HOST || 'localhost';
 
-  const ports = await fp(DEFAULT_PORT, 3100, '127.0.0.1', 2);
-
-  processArgs.set('alpaca:devPort:dev', ports[0]);
+  const serverPort = await choosePort(DEFAULT_PORT, HOST);
 
   if (nodeServerHasLunched) { return; };
 
@@ -35,31 +37,24 @@ let nodeServerHasLunched = false;
     'node_modules/.bin/supervisor',
     '--watch', 'server/mockData',
     '--', 'server/index.js',
-    '--ALPACA_WEBPACK_PORT', `${ports[0]}`
+    '--ALPACA_WEBPACK_PORT', `${serverPort}`
   );
 
   nodeServerHasLunched = true;
 
-  let alpacaModules = processArgs.get('AlPACA_MODULES');
+  const webpackPort = await choosePort(DEFAULT_PORT, HOST);
 
-  alpacaModules = JSON.parse(alpacaModules);
-
-  if (!alpacaModules.length) {
-    console.log('you have to assgin the module to start');
-    process.exit(1);
-  }
-
-  config.entry = getAvailableEntry(alpacaModules);
+  config.entry = answer.confirmAvailableModules
 
   _.map(config.entry, function (value, key) {
     config.entry[key] = [
-      `webpack-dev-server/client?http://${HOST}:${ports[1]}/`,
+      `webpack-dev-server/client?http://${HOST}:${webpackPort}/`,
       'webpack/hot/dev-server',
       value
     ];
   })
 
-  config.output.publicPath = `http://${HOST}:${ports[1]}/public/`;
+  config.output.publicPath = `http://${HOST}:${webpackPort}/public/`;
 
   var compiler = webpack(config);
 
@@ -72,9 +67,9 @@ let nodeServerHasLunched = false;
     stats: { colors: true },
   })
 
-  server.listen(ports[1], HOST, () => {
+  server.listen(webpackPort, HOST, () => {
     if (isInteractive) { clearConsole(); }
-    console.log(`Listening at http://${HOST}:${ports[1]}/public/`);
+    console.log(`Listening at http://${HOST}:${webpackPort}/public/`);
   })
 
 })()

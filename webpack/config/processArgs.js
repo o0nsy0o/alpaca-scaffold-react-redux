@@ -1,6 +1,6 @@
 const nconf = require('nconf');
 const path = require('path');
-const paths = require('../config/paths.js');
+const paths = require('./paths.js');
 
 nconf.argv().env()
   .file({
