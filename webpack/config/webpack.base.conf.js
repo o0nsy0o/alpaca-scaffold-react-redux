@@ -7,7 +7,7 @@ const chalk = require('chalk');
 module.exports = {
   output: {
     path: PUBLIC_PATH,
-    filename: '[name].[hash:8].js',
+    filename: '[name]/bundle[hash:8].js',
   },
   resolve: {
     extensions: ['.js', '.jsx', '.json'],

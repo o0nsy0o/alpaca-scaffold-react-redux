@@ -6,7 +6,7 @@ const _ = require('lodash');
 const path = require('path');
 const chalk = require('chalk');
 const webpack = require('webpack');
-const config = require('../config/webpack.dev.conf');
+const config = require('../config/webpack.prod.conf');
 const paths = require('../config/paths.js');
 const { confirmAvailableModules } = require('../utils/confirmAvailableModules');
 
@@ -55,9 +55,9 @@ const build = async (entry) => {
   config.entry = entry;
   _.forEach(entry, (entryKey) => {
     config.output.filename[entryKey] = path.join(paths.appPublic, entryKey);
-    console.log(config);
   })
 
+  console.log(config);
   let compiler = webpack(config);
 
   return new Promise((resolve, reject) => {
@@ -68,7 +68,6 @@ const build = async (entry) => {
         if (messages.errors.length > 1) {
           messages.errors.length = 1;
         }
-        console.log(messages);
         return reject(new Error(messages.errors.join('\n\n')));
       }
       if (

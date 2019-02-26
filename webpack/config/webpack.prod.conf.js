@@ -1,8 +1,8 @@
-const merge = require('webpack-merge');
 const path = require('path');
+const merge = require('webpack-merge');
 const baseWebpackConfig = require('./webpack.base.conf.js');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = merge(baseWebpackConfig, {
   mode: 'production',
@@ -10,20 +10,20 @@ module.exports = merge(baseWebpackConfig, {
     framework: ['react', 'react-dom'],
   },
   output: {
-    filename: '[name]/bundle[chunkhash].js',
-    chunkFilename: '_chunks/[id].[chunkhash].js',
+    chunkFilename: '_chunks/[name].[chunkhash].js',
   },
   plugins: [
+    new CleanWebpackPlugin(['../public'], { allowExternal: true }),
     new HtmlWebpackPlugin({
       template: path.join(paths.appTemplates, 'index.html'),
+      filename: `[name]/index.html`,
       inject: 'body',
       minify: {
         removeComments: true,
         collapseWhitespace: true,
         removeAttributeQuotes: true
       },
-    }),
-    new CleanWebpackPlugin(['../public'], { allowExternal: true })
+    })
   ],
   optimization: {
     splitChunks: {
