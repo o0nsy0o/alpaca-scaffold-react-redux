@@ -1,4 +1,5 @@
 const merge = require('webpack-merge');
+const path = require('path');
 const baseWebpackConfig = require('./webpack.base.conf.js');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
@@ -6,13 +7,12 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 module.exports = merge(baseWebpackConfig, {
   mode: 'production',
   entry: {
-    app: './app/index.js',
     framework: ['react', 'react-dom'],
   },
   output: { filename: 'js/[name].[chunkhash:16].js', },
   plugins: [
     new HtmlWebpackPlugin({
-      template: 'webpack/templates/index.html',
+      template: path.join(paths.appTemplates, 'index.html'),
       inject: 'body',
       minify: {
         removeComments: true,
@@ -20,7 +20,7 @@ module.exports = merge(baseWebpackConfig, {
         removeAttributeQuotes: true
       },
     }),
-    new CleanWebpackPlugin(['../webpack'], { allowExternal: true })
+    new CleanWebpackPlugin(['../public'], { allowExternal: true })
   ],
   optimization: {
     splitChunks: {
