@@ -9,7 +9,10 @@ module.exports = merge(baseWebpackConfig, {
   entry: {
     framework: ['react', 'react-dom'],
   },
-  output: { filename: 'js/[name].[chunkhash:16].js', },
+  output: {
+    filename: '[name]/bundle[chunkhash].js',
+    chunkFilename: '_chunks/[id].[chunkhash].js',
+  },
   plugins: [
     new HtmlWebpackPlugin({
       template: path.join(paths.appTemplates, 'index.html'),

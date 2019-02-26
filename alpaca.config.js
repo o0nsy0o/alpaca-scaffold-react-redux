@@ -15,7 +15,7 @@ module.exports = {
   },
 
   webpack: {
-    entry: { ['module1']: './src/module1' },
+    entry: { 'module1': './src/module1' },
     output: { publicPath: '/' },
     urlLoaderQuery: { limit: 5000 }
   }

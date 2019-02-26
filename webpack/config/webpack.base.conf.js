@@ -1,13 +1,12 @@
 
-const path = require('path');
-const APP_PATH = path.resolve(__dirname, '../src');
-const DIST_PATH = path.resolve(__dirname, '../dist');
+const paths = require('./paths');
+const PUBLIC_PATH = paths.appPublic;
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const chalk = require('chalk');
 
 module.exports = {
   output: {
-    path: DIST_PATH,
+    path: PUBLIC_PATH,
     filename: '[name].[hash:8].js',
   },
   resolve: {
