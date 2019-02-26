@@ -7,20 +7,18 @@ const _ = require('lodash');
 const path = require('path');
 const chalk = require('chalk');
 const webpack = require('webpack');
-const gitRev = require('git-rev-sync');
 const config = require('../config/webpack.dev.conf');
-const inquirer = require('../utils/inquirer.js');
 const paths = require('../config/paths.js');
-const fileSizeReporter = require('fileSizeReporter');
 const { confirmAvailableModules } = require('../utils/confirmAvailableModules');
+
+const fileSizeReporter = require('alpaca-dev-utils/lib/fileSizeReporter');
+const imageMinifier = require('alpaca-dev-utils/lib/imageMinifier.js');
+const formatWebpackMessages = require('alpaca-dev-utils/lib/formatWebpackMessages');
 
 const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;
 const WARN_AFTER_CHUNK_GZIP_SIZE = 1024 * 1024;
 const measureFileSizesBeforeBuild = fileSizeReporter.measureFileSizesBeforeBuild;
 const printFileSizesAfterBuild = fileSizeReporter.printFileSizesAfterBuild;
-
-const imageMinifier = require('alpaca-dev-utils/lib/imageMinifier.js');
-const formatWebpackMessages = require('alpaca-dev-utils/lib/formatWebpackMessages');
 
 (async () => {
   const answer = await confirmAvailableModules();
@@ -32,7 +30,7 @@ const formatWebpackMessages = require('alpaca-dev-utils/lib/formatWebpackMessage
     fs.emptyDirSync(path.join(paths.appPublic, entryKey));
   })
 
-  const { stats, previousFileSizes, warnings } = await build(previousFileSizes);
+  const { stats, warnings } = await build(previousFileSizes);
   if (warnings.length) {
     console.log(chalk.yellow('Compiled with warnings.\n'));
     console.log(warnings.join('\n\n'));
