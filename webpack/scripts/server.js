@@ -1,6 +1,4 @@
-process.on('unhandledRejection', err => {
-  throw err;
-});
+process.on('unhandledRejection', err => { throw err; });
 
 const path = require('path');
 const webpack = require('webpack');
