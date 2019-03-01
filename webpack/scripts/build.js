@@ -8,6 +8,8 @@ const chalk = require('chalk');
 const webpack = require('webpack');
 const config = require('../config/webpack.prod.conf');
 const paths = require('../config/paths.js');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 const { confirmAvailableModules } = require('../utils/confirmAvailableModules');
 
 const fileSizeReporter = require('alpaca-dev-utils/lib/FileSizeReporter');
@@ -23,8 +25,9 @@ const printFileSizesAfterBuild = fileSizeReporter.printFileSizesAfterBuild;
   const answer = await confirmAvailableModules();
   if (!answer.availableModulesOk) return;
   const previousFileSizes = await measureFileSizesBeforeBuild(paths.appPublic);
-  _.forEach(answer.availableModules, (entryKey) => {
-    console.log(chalk.black.bold(`Clean folder "${chalk.cyan(entryKey)}"`));
+  const availableModules = Object.keys(answer.availableModules);
+  _.forEach(availableModules, (entryKey) => {
+    console.log(chalk.black.bold(`Clean folder "${chalk.cyan(path.join(paths.appPublic, entryKey))}"`));
     fs.emptyDirSync(path.join(paths.appPublic, entryKey));
   })
 
@@ -53,13 +56,26 @@ const printFileSizesAfterBuild = fileSizeReporter.printFileSizesAfterBuild;
 const build = async (entry) => {
   console.log('Creating an optimized production build...');
   config.entry = entry;
-  _.forEach(entry, (entryKey) => {
-    config.output.filename[entryKey] = path.join(paths.appPublic, entryKey);
-  })
-
-  console.log(config);
+  const nowOption = {
+    template: path.join(paths.appTemplates, 'index.html'),
+    filename: 'index.html',
+    inject: 'body',
+    minify: {
+      removeComments: true,
+      collapseWhitespace: true,
+      removeAttributeQuotes: true
+    },
+  }
+  const entryKeys = Object.keys(entry);
+  const clearPath = [];
+  _.forEach(entryKeys, (entryKey) => {
+    nowOption.filename = `${entryKey}/index.html`;
+    nowOption.chunks = entry[entryKey];
+    config.plugins.push(new HtmlWebpackPlugin(nowOption))
+    clearPath.push(path.join(paths.appPublic, entryKey));
+  });
+  config.plugins.push(new CleanWebpackPlugin(clearPath, { allowExternal: true }))
   let compiler = webpack(config);
-
   return new Promise((resolve, reject) => {
     compiler.run((err, stats) => {
       if (err) { return reject(err); }
