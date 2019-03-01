@@ -30,7 +30,6 @@ const printFileSizesAfterBuild = fileSizeReporter.printFileSizesAfterBuild;
     console.log(chalk.black.bold(`Clean folder "${chalk.cyan(path.join(paths.appPublic, entryKey))}"`));
     fs.emptyDirSync(path.join(paths.appPublic, entryKey));
   })
-
   const { stats, warnings } = await build(answer.availableModules);
   if (warnings.length) {
     console.log(chalk.yellow('Compiled with warnings.\n'));

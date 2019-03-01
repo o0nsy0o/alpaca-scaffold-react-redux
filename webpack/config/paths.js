@@ -9,7 +9,9 @@ module.exports = {
   appPackageJson: resolveApp('package.json'),
   appSrc: resolveApp('src'),
   appServer: resolveApp('server'),
+  appPackages: resolveApp('packages'),
   appNodeModules: resolveApp('node_modules'),
   appAlpacaConfig: resolveApp('alpaca.config.js'),
-  appTemplates: resolveApp('webpack/templates')
+  appTemplates: resolveApp('webpack/templates'),
+
 };
