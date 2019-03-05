@@ -29,6 +29,8 @@ const { confirmAvailableModules } = require('../utils/confirmAvailableModules');
 
   const serverPort = await choosePort(DEFAULT_PORT, HOST);
 
+  const webpackPort = await choosePort(DEFAULT_PORT, HOST);
+
   if (nodeServerHasLunched) { return; };
 
   executeNodeScript(
@@ -38,12 +40,12 @@ const { confirmAvailableModules } = require('../utils/confirmAvailableModules');
     '-q',
     '--',
     'server/index.js',
-    '--ALPACA_WEBPACK_PORT', `${serverPort}`
+    '--ALPACA_WEBPACK_PORT', `${serverPort}`,
+    '--ALPACA_WEBPACK_URL',`http://${HOST}:${webpackPort}/public/`
   );
 
   nodeServerHasLunched = true;
 
-  const webpackPort = await choosePort(DEFAULT_PORT, HOST);
 
   config.entry = answer.availableModules
 
@@ -56,7 +58,6 @@ const { confirmAvailableModules } = require('../utils/confirmAvailableModules');
   })
 
   config.output.publicPath = `http://${HOST}:${webpackPort}/public/`;
-
   var compiler = webpack(config);
 
   var server = new WebpackDevServer(compiler, {
