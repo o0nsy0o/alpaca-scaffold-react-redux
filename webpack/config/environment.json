@@ -1,5 +1,6 @@
 {
-  "venus": {
+  "alpaca": {
+    "ProjectName": "alpaca-react-template",
     "devHost": {
       "dev": "http://me.ly.com",
       "prod": "http://me.ly.com"

@@ -1,5 +1,5 @@
-const path = require('path');
 const projectVirtualPath = 'projectVirtualPath';
+
 module.exports = {
   scaffoldType: 'react',
 

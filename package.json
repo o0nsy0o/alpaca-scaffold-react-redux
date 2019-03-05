@@ -1,5 +1,5 @@
 {
-  "name": "redux-scaffold",
+  "name": "alpaca-react-template",
   "version": "0.3.0",
   "description": "A react scaffold with redux and its best practice",
   "engines": {
