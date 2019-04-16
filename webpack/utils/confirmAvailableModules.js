@@ -19,5 +19,7 @@ exports.confirmAvailableModules = async () => {
     message: 'Please confirm above modules you could like?'
   }])
 
+  console.log(answer);
+
   return { availableModulesOk: answer.availableModulesOk, availableModules };
 }
